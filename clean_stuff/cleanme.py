@@ -1,4 +1,3 @@
-#!/Users/mkerrig/anaconda/bin/Python
 from pprint import pprint
 import pandas as pd
 import csv
