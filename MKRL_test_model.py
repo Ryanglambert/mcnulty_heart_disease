@@ -129,6 +129,7 @@ def load_dataframes_x_y(file_path):
     return df_x, df_y
 
 def models_test():
+
     df_x, df_y = load_dataframes_x_y('holdout_copy.pkl', 'r')
 
     model = GaussianNB()
