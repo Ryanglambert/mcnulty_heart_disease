@@ -113,6 +113,21 @@ def accuracy_score_vs_prob_thresh(model, title, df_x, df_y):
 
     return threshes, accuracies, recalls, precision
 
+
+def load_dataframe(file_path):
+    load_dict = {}
+    with open(file_path, 'r') as read:
+        load_dict = pickle.load(read)
+        read.close()
+    df = pd.DataFrame(load_dict)
+    df_x = df[['age','sex','thalach',
+        'exang','years','famhist',
+        'thalrest']]
+    df_x['years'] = df_x['years'].map(lambda x: 1 if x > 0 else 0)
+    df_y = df['num']
+    df_y = df_y.replace({'1': '1','2': '1','3': '1','4':'1'})
+    return df_x, df_y
+
 def models_test():
     load_dict = {}
     with open('holdout_copy.pkl','r') as read:
