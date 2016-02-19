@@ -74,9 +74,9 @@ def decision_func(probabilities,thresh):
 
 def try_model(model,title,df_x,df_y, thresh):
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(
-    df_x, df_y, test_size=0.3, random_state=0)
+    df_x, df_y, test_size=0.3)
     model.fit(X_train,y_train)
-    cross_val = cross_val_score(model,df_x,df_y)
+    cross_val = cross_val_score(model,df_x,df_y, cv=10)
     print float(sum(cross_val))/float(len(cross_val))
     y_predict_prob = model.predict_proba(X_test)
     y_predict =  decision_func(y_predict_prob[:,1],0.1)
@@ -89,7 +89,8 @@ def try_model(model,title,df_x,df_y, thresh):
     # print accuracy_score(y1,y_predict)
     # print recall_score(y1,y_predict)
     acc_score = accuracy_score(y1, y_predict)
-    print acc_score
+    print 'acc_score is: ', acc_score
+    print '_score is: ', acc_score
     rec_score = recall_score(y1, y_predict)
     prec_score = precision_score(y1, y_predict)
     return acc_score, rec_score, prec_score
@@ -122,8 +123,8 @@ def load_dataframes_x_y(file_path):
     df = pd.DataFrame(load_dict)
     df_x = df[['age','sex','thalach',
         'exang','years','famhist',
-        'thalrest']]
-    df_x['years'] = df_x['years'].map(lambda x: 1 if x > 0 else 0)
+        'thalrest']].copy()
+    df_x['years'] = (df_x['years'].astype(int) > 1).astype(int)
     df_y = df['num']
     df_y = df_y.replace({'1': '1','2': '1','3': '1','4':'1'})
     return df_x, df_y
