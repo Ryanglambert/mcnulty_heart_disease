@@ -1,6 +1,12 @@
 #!/usr/bin/python
 ​
 import sys
+import numpy as np
+from sklearn.naive_bayes import GaussianNB
+
+import predict
+from MKRL_test_model import ModelWithDecisionFuncWrapper
+
 ​
 print "First line of script.<P>"
 argString = str(sys.argv)
@@ -43,6 +49,10 @@ thalrest = int(thalrestStripped)
 ​
 #print "Completed section 2.<P>"
 ​
+
+##### new from ryan
+predicted = predict.predict(age, sex, thalach, exang, years, famhist, thalrest)
+
 print "age: " + str(age) + "<br>"
 print "sex: " + str(sex) + "<br>"
 print "thalach: " + str(thalach) + "<br>"
