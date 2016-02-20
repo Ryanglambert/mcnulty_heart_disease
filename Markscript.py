@@ -3,6 +3,7 @@
 import sys
 import numpy as np
 from sklearn.naive_bayes import GaussianNB
+from os import path
 
 import predict
 from MKRL_test_model import ModelWithDecisionFuncWrapper
