@@ -20,6 +20,24 @@ from sklearn.metrics import recall_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import confusion_matrix
 
+class ModelWithDecisionFuncWrapper(object):
+    def __init__(self, prod_model, thresh):
+        self.model = prod_model
+        self.thresh = thresh
+        
+    def decision_func(self, probabilities):
+        ret_list = []
+        for prob in probabilities:
+            if prob <= self.thresh:
+                ret_list.append(0)
+            else:                   #if greater than threshhold
+                ret_list.append(1)
+        return ret_list
+    
+    def predict(self, df_x):
+        y_predict_prob = self.model.predict_proba(df_x)
+        y_predict =  self.decision_func(y_predict_prob[:,1])
+        return y_predict
 
 def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None, n_jobs=1,
                         train_sizes=np.linspace(.1, 1.0, 5)):
@@ -63,6 +81,7 @@ def plot_precision_recall_curve(y_true,y_scores,title):
     plt.title(title)
     plt.legend(loc="lower left")
     plt.show()
+
 def decision_func(probabilities,thresh):
     ret_list = []
     for prob in probabilities:
@@ -79,7 +98,7 @@ def try_model(model,title,df_x,df_y, thresh):
     cross_val = cross_val_score(model,df_x,df_y, cv=10)
     print float(sum(cross_val))/float(len(cross_val))
     y_predict_prob = model.predict_proba(X_test)
-    y_predict =  decision_func(y_predict_prob[:,1],0.1)
+    y_predict =  decision_func(y_predict_prob[:,1], thresh)
 
     #y_predict =  decision_func(y_predict_prob[:,1], thresh)
 
@@ -101,6 +120,17 @@ def try_model(model,title,df_x,df_y, thresh):
     y2 = map(int,y2)'''
     #plot_precision_recall_curve(y1,y2,title)
 
+def make_prod_model(model,title,df_x,df_y, thresh):
+    pre_wrapped_prod_model = model.fit(df_x ,df_y)
+    wrapped_model = ModelWithDecisionFuncWrapper(pre_wrapped_prod_model, thresh)
+    return wrapped_model
+
+def pickle_model(model, filename):
+    with open(filename, 'w+') as writer:
+        print(model)
+        pickle.dump(model, writer)
+        writer.close()
+
 def accuracy_score_vs_prob_thresh(model, title, df_x, df_y):
     threshes = np.linspace(.05, .95, 45)
     accuracies = []
@@ -111,6 +141,16 @@ def accuracy_score_vs_prob_thresh(model, title, df_x, df_y):
         accuracies.append(scores[0])
         recalls.append(scores[1])
         precision.append(scores[2])
+
+    '''threshes, accuracies, recalls, precision = \
+    accuracy_score_vs_prob_thresh(model, title, df_x, df_y)
+    plt.plot(threshes, accuracies, label='acc', color='g')
+    plt.plot(threshes, precision, label='prec', color='b')
+    plt.plot(threshes, recalls, label='recall', color='r')
+    plt.ylabel('percentage')
+    plt.xlabel('threshhold')
+    plt.legend()
+    plt.show()'''
 
     return threshes, accuracies, recalls, precision
 
@@ -149,15 +189,6 @@ def models_test():
     title = 'RandomForestClassifier Precision Curve'
     try_model(model,title,df_x,df_y,1)
 #######
-    '''threshes, accuracies, recalls, precision = \
-    accuracy_score_vs_prob_thresh(model, title, df_x, df_y)
-    plt.plot(threshes, accuracies, label='acc', color='g')
-    plt.plot(threshes, precision, label='prec', color='b')
-    plt.plot(threshes, recalls, label='recall', color='r')
-    plt.ylabel('percentage')
-    plt.xlabel('threshhold')
-    plt.legend()
-    plt.show()'''
 #########
 # models_test()
 '''
@@ -166,3 +197,14 @@ years isn't too bad
 Definately thinking bagging is the way to go
 Could we define obesity?
 '''
+
+def main():
+    df_x, df_y = load_dataframes_x_y('./clean_stuff/cleaned.pkl')
+    prod_model = make_prod_model(GaussianNB(), 'GaussianNB', df_x, df_y, thresh=.1)
+    pickle_model(prod_model, './prod_model/prod_model.pkl')
+
+
+
+if __name__ == '__main__':
+    main()
+
