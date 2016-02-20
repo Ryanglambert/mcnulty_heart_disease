@@ -6,7 +6,7 @@ A website that takes diagnostic information from someone experiencing chest pain
 
 Temporaily hosted at www.doihaveheartdisease.com
 
-Predictions are made using a gaussian naieve bayes classifier trained on the Cleveland, OH subset of the [UCI Heart Disease Data Set](https://archive.ics.uci.edu/ml/datasets/Heart+Disease). The model has been tuned to maximize recall (minimize false negatives).
+Predictions are made using a gaussian naieve bayes classifier from `sklearn` trained on the Cleveland, OH subset of the [UCI Heart Disease Data Set](https://archive.ics.uci.edu/ml/datasets/Heart+Disease). The model has been tuned to maximize recall (minimize false negatives).
 
 Completed as project 'Mcnulty' for the 2016 [Metis](http://www.thisismetis.com/) San Francisco cohort.
 
