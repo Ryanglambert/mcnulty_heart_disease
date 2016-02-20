@@ -2,7 +2,6 @@ import pickle
 import numpy as np
 from MKRL_test_model import ModelWithDecisionFuncWrapper
 from sklearn.naive_bayes import GaussianNB
-import sys
 
 def load_prod_model(pickle_model_path):
     with open(pickle_model_path, 'rb') as pickle_model:
