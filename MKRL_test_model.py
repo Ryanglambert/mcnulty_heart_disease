@@ -3,7 +3,7 @@ import pickle
 from pprint import pprint
 from sklearn.cross_validation import train_test_split
 import numpy as np
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt <<< needs to be commented out in prod
 import pandas as pd
 from sklearn import cross_validation
 from sklearn.neighbors import KNeighborsClassifier
