@@ -1,5 +1,6 @@
-# mcnulty_heart_disease
-Project Number 3 with thisismetis.com
+# McNulty / Heart Disease
+## Project 3 for the [Metis](http://www.thisismetis.com/) data science program
+
 
 A website that takes diagnostic information from someone experiencing chest pain and gives a makes a yes/no prediction about their heart disease status.
 
