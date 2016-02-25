@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+</head>
+<body>
+
+<div data-role="page">
+  <div data-role="header">
+  <h1>Enter Medical Information Below</h1>
+  </div>
+
+  <div data-role="main" class="ui-content">
+    <form method="post" action="demoform.asp">
+      <div class="ui-field-contain">
+<p>
+        <label for="age">Age:</label>
+        <input type="text" name="age" id="age">       
+</p>
+<p>
+        <label for="hr">Maximum heart rate during exercise:</label>
+        <input type="text" name="hr" id="hr">
+</p>
+<p>
+        <label for="rhr">Resting Heart Rate:</label>
+        <input type="text" name="rhr" id="rhr">
+</p>
+<p>
+        <label for='sex'>What sex are you?</label>
+        <input type="checkbox" data-role="flipswitch" name="sex" id="sex" data-on-text="M" data-off-text="F">
+</p>
+   <p>     
+        <label for='chestpains'>Do you experience increased chest pains while exercising? </label>
+        <input type="checkbox" data-role="flipswitch" name="chestpains" id="chestpains" data-on-text="Yes" data-off-text="No">
+</p>
+<p>
+        <label for='smoke'>Have you smoked for at least two years? </label>
+        <input type="checkbox" data-role="flipswitch" name="smoke" id="smoke" data-on-text="Yes" data-off-text="No">
+</p>
+<p>
+        <label for='famhist'>Do you have a family history of heart disease?</label>
+        <input type="checkbox" data-role="flipswitch" name="famhist" id="famhist" data-on-text="Yes" data-off-text="No">
+<p>
+      </div>
+      <input type="submit" data-inline="true" value="Submit">
+    </form>
+  </div>
+</div>
+
+</body>
+</html>
