@@ -31,7 +31,7 @@ def load_dataframes_x_y(file_path):
     df = pd.DataFrame(load_dict)
     df_x = df[['age','sex','thalach',
         'exang','years','famhist',
-        'thalrest','chol']].copy()
+        'thalrest']].copy()
     df_x['years'] = (df_x['years'].astype(int) > 2).astype(int)
     df_y = df['num']
     df_y = df_y.replace({'1': '1','2': '1','3': '1','4':'1'})
@@ -78,12 +78,14 @@ def tryVoting(num):
     while i <=num:
         X_train, X_test, y_train, y_test = cross_validation.train_test_split(
         df_x, df_y, test_size=0.3)
-        model = logRegCV.fit(X_train,y_train)
-        y_predict_prob = model.predict_proba(X_test)
-        y_predict = decision_func(y_predict_prob[:,1],.25)
-        #y_predict = list(model.predict(X_test).astype(int))
-        y_true = list(y_test)
-        y_true = map(int,y_true)
+        model = logRegCV.fit(df_x,df_y)
+        global MODEL
+        MODEL = model
+        y_predict_prob = model.predict_proba(df_x)
+        y_predict = decision_func(y_predict_prob[:,1],.115)
+        #y_predict = list(model.predict(df_x).astype(int))
+        y_true = list(df_y)
+        y_true = map(int,df_y)
         matrix+= confusion_matrix(y_true,y_predict)
         acc_score = accuracy_score(y_true, y_predict)
         rec_score = recall_score(y_true, y_predict)
@@ -102,5 +104,9 @@ def tryVoting(num):
     print 'rec_score is: ',float(sum(rec_scores))/float(len(rec_scores))
     print 'prec_score is: ',float(sum(prec_scores))/float(len(prec_scores))
     print float(sum(cross_vals))/float(len(cross_vals))
-
-tryVoting(100)
+    print "++++++ MODEL COEFFICIENTS +++++++\n", model.coef_
+    print "++++++ MODEL INTERCEPT ++++++\n", model.intercept_
+    print "ONE PATIENT ++++++++++++++++++  \n", df_x.iloc[0,:], df_y.iloc[0]
+    print "model_predict_proba = ", MODEL.predict_proba(df_x.iloc[0,:])
+    print "model_predict = ", MODEL.predict(df_x.iloc[0, :])
+tryVoting(1)
