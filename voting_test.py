@@ -79,6 +79,8 @@ def tryVoting(num):
         X_train, X_test, y_train, y_test = cross_validation.train_test_split(
         df_x, df_y, test_size=0.3)
         model = logRegCV.fit(df_x,df_y)
+        global MODEL
+        MODEL = model
         y_predict_prob = model.predict_proba(df_x)
         y_predict = decision_func(y_predict_prob[:,1],.115)
         #y_predict = list(model.predict(df_x).astype(int))
@@ -102,6 +104,9 @@ def tryVoting(num):
     print 'rec_score is: ',float(sum(rec_scores))/float(len(rec_scores))
     print 'prec_score is: ',float(sum(prec_scores))/float(len(prec_scores))
     print float(sum(cross_vals))/float(len(cross_vals))
-    print model.coef_
-
+    print "++++++ MODEL COEFFICIENTS +++++++\n", model.coef_
+    print "++++++ MODEL INTERCEPT ++++++\n", model.intercept_
+    print "ONE PATIENT ++++++++++++++++++  \n", df_x.iloc[0,:], df_y.iloc[0]
+    print "model_predict_proba = ", MODEL.predict_proba(df_x.iloc[0,:])
+    print "model_predict = ", MODEL.predict(df_x.iloc[0, :])
 tryVoting(1)
