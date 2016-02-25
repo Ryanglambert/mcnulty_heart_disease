@@ -23,15 +23,25 @@ from sklearn.ensemble import VotingClassifier
 from sklearn.ensemble import BaggingClassifier
 
 
-def load_dataframes_x_y(file_path):
+BASE_MODEL = ['age','sex','thalach',
+        'exang','years','famhist',
+        'thalrest']
+BASE_MODEL_W_CHOL = ['age','sex','thalach',
+        'exang','years','famhist',
+        'thalrest', 'chol']
+BASE_MODEL_W_BP = ['age','sex','thalach',
+        'exang','years','famhist',
+        'thalrest', 'trestbpd']
+BASE_MODEL_W_BP_CHOL = ['age','sex','thalach',
+        'exang','years','famhist',
+        'thalrest', 'chol', 'trestbpd']
+def load_dataframes_x_y(file_path, x_inputs_list):
     load_dict = {}
     with open(file_path, 'r') as read:
         load_dict = pickle.load(read)
         read.close()
     df = pd.DataFrame(load_dict)
-    df_x = df[['age','sex','thalach',
-        'exang','years','famhist',
-        'thalrest']].copy()
+    df_x = df[x_inputs_list].copy()
     df_x['years'] = (df_x['years'].astype(int) > 2).astype(int)
     df_y = df['num']
     df_y = df_y.replace({'1': '1','2': '1','3': '1','4':'1'})
@@ -59,9 +69,9 @@ def decision_func(probabilities,thresh):
     return ret_list
 
 
-def tryVoting(num):
+def tryVoting(num,x_inputs_list, pa_num=50):
     i =0
-    df_x, df_y = load_dataframes_x_y('cleaned_copy.pkl')
+    df_x, df_y = load_dataframes_x_y('cleaned_copy.pkl', x_inputs_list)
 
     KNN = KNeighborsClassifier(n_neighbors=5)
     GNB = GaussianNB()
@@ -99,6 +109,8 @@ def tryVoting(num):
         cross_val = cross_val_score(model,df_x,df_y, cv=10)
         cross_vals.append( float(sum(cross_val))/float(len(cross_val)))
         i+=1
+    test_predict_proba = MODEL.predict_proba(df_x.iloc[pa_num, :])
+    test_predict = MODEL.predict(df_x.iloc[pa_num, :])
     print matrix / (num)
     print 'acc_score is: ',float(sum(acc_scores))/float(len(acc_scores))
     print 'rec_score is: ',float(sum(rec_scores))/float(len(rec_scores))
@@ -106,7 +118,14 @@ def tryVoting(num):
     print float(sum(cross_vals))/float(len(cross_vals))
     print "++++++ MODEL COEFFICIENTS +++++++\n", model.coef_
     print "++++++ MODEL INTERCEPT ++++++\n", model.intercept_
-    print "ONE PATIENT ++++++++++++++++++  \n", df_x.iloc[0,:], df_y.iloc[0]
-    print "model_predict_proba = ", MODEL.predict_proba(df_x.iloc[0,:])
-    print "model_predict = ", MODEL.predict(df_x.iloc[0, :])
-tryVoting(1)
+    print "ONE PATIENT ++++++++++++++++++  \n", df_x.iloc[pa_num, :], df_y.iloc[pa_num]
+    print "model_predict_proba = ", test_predict_proba
+    print "model_predict = ", test_predict
+print "######################  BASE_MODEL ########################### "
+tryVoting(1, BASE_MODEL, pa_num = 100)
+print "######################  BASE_MODEL_W_BP ########################### "
+tryVoting(1, BASE_MODEL_W_BP, pa_num = 100)
+print "######################  BASE_MODEL_W_CHOL ########################### "
+tryVoting(1, BASE_MODEL_W_CHOL, pa_num = 100)
+print "######################  BASE_MODEL_W_BP_CHOL ########################### "
+tryVoting(1, BASE_MODEL_W_BP_CHOL, pa_num = 100)
