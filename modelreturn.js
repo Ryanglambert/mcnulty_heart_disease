@@ -8,29 +8,28 @@
 // Input values as a javascript array with 1 as the first value
 
 var predvalue = function(input){
-	
+
 	if (typeof input[8] == 'undefined' && typeof(input[9]) == 'undefined') {
 		
-		console.log(input)
 		input.pop();
 		input.pop();
-		console.log(input)
+
 		return predbasemodel(input);
-	
+
 	} else if (typeof input[8] != 'undefined' && typeof(input[9]) == 'undefined') {
-		
+
 		input.pop()
 		return predwcholesterol(input);
-	
+
 	} else if (typeof input[8] == 'undefined' && typeof(input[9]) != 'undefined') {
-		
+
 		input.splice(8,1)
 		return predwbp(input)
-	
+
 	} else {
-		
+
 		return predwbpch(input)
-	
+
 	}
 
 }
