@@ -12,11 +12,11 @@
   <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css">
   <style>
-  #ageSlider { height: 5px; width: 200px;}
-  #bpSlider { height: 5px; width: 200px;}
-  #MHRSlider { height: 5px; width: 200px;}
-  #RHRSlider { height: 5px; width: 200px;}
-  #cholSlider { height: 5px; width: 200px;}
+  #ageSlider { height: 7px; width: 200px;}
+  #bpSlider { height: 7px; width: 200px;}
+  #MHRSlider { height: 7px; width: 200px;}
+  #RHRSlider { height: 7px; width: 200px;}
+  #cholSlider { height: 7px; width: 200px;}
   body {
 		font-family:  Helvetica, Arial, sans-serif;
 		margin: 32px;
@@ -123,7 +123,6 @@ var gauge = function(container, configuration) {
 			.domain([config.minValue, config.maxValue]);
 
 		ticks = scale.ticks(config.majorTicks);
-    console.log(typeof(ticks))
 		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
 
 		arc = d3.svg.arc()
@@ -219,7 +218,7 @@ var gauge = function(container, configuration) {
 </script>
 
 <script>
-var boo=1,age=0,sex=0,thalach=0,exang=0,years=0,famhist=0,thalrest=0,chol,bp;
+var boo=1,age=55,sex=1,thalach=150,exang=0,years=1,famhist=1,thalrest=75,chol,bp;
 
 function onDocumentReady() {
 	var powerGauge = gauge('#power-gauge', {
@@ -312,7 +311,7 @@ function onDocumentReady() {
 
   $(function() {
     $( "#ageSlider" ).slider({
-      min: 20,
+      min: 18,
       max: 90,
       value: 55,
       slide: function( event, ui ) {
@@ -325,9 +324,9 @@ function onDocumentReady() {
   });
     $(function() {
       var bpslider = $( "#bpSlider" ).slider({
-        min: 20,
-        max: 90,
-        value: 55,
+        min: 90,
+        max: 200,
+        value: 130,
         slide: function( event, ui ) {
           $( "#bp" ).val( ui.value );
         },
@@ -349,8 +348,8 @@ function onDocumentReady() {
   });
   $(function() {
     $( "#MHRSlider" ).slider({
-      min: 120,
-      max: 200,
+      min: 71,
+      max: 210,
       value: 150,
       slide: function( event, ui ) {
         $( "#MHR" ).val(  ui.value );
@@ -365,8 +364,8 @@ function onDocumentReady() {
   $(function() {
     $( "#RHRSlider" ).slider({
       min: 40,
-      max: 90,
-      value: 65,
+      max: 120,
+      value: 75,
       slide: function( event, ui ) {
         $( "#RHR" ).val(  ui.value );
       },
@@ -379,8 +378,8 @@ function onDocumentReady() {
 
   $(function() {
     cholslider = $( "#cholSlider" ).slider({
-      min: 0,
-      max: 500,
+      min: 120,
+      max: 600,
       value: 250,
       slide: function( event, ui ) {
         $( "#chol" ).val(  ui.value );
@@ -498,21 +497,21 @@ if ( !window.isLoaded ) {
 
 <p id="display_value">
   <label for="age">Age:</label>
-  <input type="text" id="age" readonly style="border:0; color:#f6931f; font-weight:bold;">
+  <input type="text" id="age" readonly style="border:0; color:#f6931f; font-size:1.2em; font-weight:bold;">
 </p>
 <p id="question"> Select your age</p>
 <div id="ageSlider"></div>
 
 <p id="display_value">
   <label for="MHR">Maximum Heart Rate:</label>
-  <input type="text" id="MHR" readonly style="border:0; color:#f6931f; font-weight:bold;">
+  <input type="text" id="MHR" readonly style="border:0; color:#f6931f;font-size:1.2em; font-weight:bold;">
 </p>
 <p id="question"> Select your maximum heart rate</p>
 <div id="MHRSlider"></div>
 
 <p id="display_value">
   <label for="RHR">Resting Heart Rate:</label>
-  <input type="text" id="RHR" readonly style="border:0; color:#f6931f; font-weight:bold;">
+  <input type="text" id="RHR" readonly style="border:0; color:#f6931f;font-size:1.2em; font-weight:bold;">
 </p>
 <p id="question"> Select your resting heart rate</p>
 <div id="RHRSlider"></div>
@@ -548,20 +547,21 @@ if ( !window.isLoaded ) {
 
 <p id="display_value">
   <label for="chol">Cholesterol:</label>
-  <input type="text" id="chol" readonly style="border:0; color:#f6931f; font-weight:bold;">
+  <input type="text" id="chol" readonly style="border:0; color:#f6931f; font-size:1.2em;font-weight:bold;">
 </p>
 
 <p id="question"> Select your cholesterol </p>
 <div id="cholSlider"></div>
+<p></p>
 <button id="disablechol">Toggle disable/enable</button>
 
 <p id="display_value">
   <label for="bp">Blood Pressure:</label>
-  <input type="text" id="bp" readonly style="border:0; color:#f6931f; font-weight:bold;">
+  <input type="text" id="bp" readonly style="border:0; color:#f6931f;font-size:1.2em; font-weight:bold;">
 </p>
 
 <p id="question"> Select your blood pressure </p>
-<div id="bpSlider"></div>
+<div id="bpSlider"></div><p></p>
 <button id="disablebp">Toggle disable/enable</button>
 <li></li>
 <li></li>
