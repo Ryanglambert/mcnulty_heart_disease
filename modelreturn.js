@@ -7,20 +7,33 @@
 
 // Input values as a javascript array with 1 as the first value
 
-var predvalue(input){
-	if (window.input[8] and !window.input[9]) {
+var predvalue = function(input){
+	
+	if (typeof input[8] == 'undefined' && typeof(input[9]) == 'undefined') {
+		
+		console.log(input)
+		input.pop();
+		input.pop();
+		console.log(input)
+		return predbasemodel(input);
+	
+	} else if (typeof input[8] != 'undefined' && typeof(input[9]) == 'undefined') {
+		
 		input.pop()
-		return predbasemodel(input)
-	} else if (true) {
-		return predwcholesterol(input)
-	} else if (true) {
+		return predwcholesterol(input);
+	
+	} else if (typeof input[8] == 'undefined' && typeof(input[9]) != 'undefined') {
+		
+		input.splice(8,1)
 		return predwbp(input)
+	
 	} else {
+		
 		return predwbpch(input)
+	
 	}
 
 }
-
 
 
 var predbasemodel = function(input){
