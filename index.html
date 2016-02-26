@@ -1,347 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<link href='http://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
-    <head>
-        <meta charset="utf-8">
-        <title>D3 Test</title>
-        <script type="text/javascript" src="d3/d3.v3.js"></script>
-        <style type= "text/css">
-        ​
-        body {
-          background-color: #393939;
-          font-size: 18px;
-          font-family: 'Raleway', sans-serif;
-        }
+<head>
+  <meta charset="utf-8">
+  <title>jQuery UI Slider - Range slider</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="//code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="/resources/demos/style.css">
+  <style>
+  div {
+    height: auto;
+    width: 200px;
+  }
 
-        p {
-          color: black;
-          margin: 50px;
-        }
+  #hd .ui-selecting { background: #FECA40; }
+  #hd .ui-selected { background: #F39814; color: white; }
+  #hd { list-style-type: none; margin: 0; padding: 0; width: 20%; }
+  #hd a { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
 
-        a {
-          color: #4FDEF2;
-        }
+  #cp .ui-selecting { background: #FECA40; }
+  #cp .ui-selected { background: #F39814; color: white; }
+  #cp {  margin: 0; padding: 0; width: 20%; }
+  #cp a { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
 
-        .axis {
-          fill: gray;
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          user-select: none;
-        }
+  #sex .ui-selecting { background: #FECA40; }
+  #sex .ui-selected { background: #F39814; color: white; }
+  #sex {  margin: 0; padding: 0; width: 20%; }
+  #sex a { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
 
-        .axis .halo {
-          stroke: gray;
-          stroke-width: 14px;
-          stroke-linecap: round;
-        }
+  #smoker .ui-selecting { background: #FECA40; }
+  #smoker .ui-selected { background: #F39814; color: white; }
+  #smoker {  margin: 0; padding: 0; width: 20%; }
+  #smoker a { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
+</style>
+  <script>
+  var age,sex,thalach,exang,years,famhist,thalrest,chol,bp;
 
-        .slider .handle path {
-          stroke: tomato;
-          stroke-width: 11px;
-          stroke-linecap: round;
-          pointer-events: none;
-        }
-
-        .slider .handle text {
-          fill: 	rgb(64,64,54);
-          text-align: center;
-          font-size: 24px;
-        }
-        </style>
-    </head>
-    <body>
-      <script>
-      var margin = {top: 200, right: 50, bottom: 200, left: 50},
-      width = 300 - margin.left - margin.right,
-      height = 650 - margin.bottom - margin.top,
-      startingValue = 55;
-
-      // sets scale for slider
-      var x = d3.scale.linear()
-          .domain([20, 90])
-          .range([0, width])
-          .clamp(true);
-
-      // defines brush
-      var brush = d3.svg.brush()
-          .x(x)
-          .extent([startingValue, startingValue])
-          .on("brush", brushed);
-
-      var svg = d3.select("body").append("svg")
-          .attr("width", width + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        // classic transform to position g
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      svg.append("g")
-          .attr("class", "x axis")
-          // put in middle of screen
-          .attr("transform", "translate(0," + height *1/5 + ")")
-          // inroduce axis
-          .call(d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickFormat(function(d) { return d; })
-            .tickSize(0)
-            .tickPadding(12)
-            .tickValues([20, 90]))
-        .select(".domain")
-        .select(function() {console.log(this); return this.parentNode.appendChild(this.cloneNode(true)); })
-          .attr("class", "halo");
-
-      var slider = svg.append("g")
-          .attr("class", "slider")
-          .call(brush);
-
-      slider.selectAll(".extent,.resize")
-          .remove();
-
-      slider.select(".background")
-          .attr("height", height);
-
-      var handle = slider.append("g")
-          .attr("class", "handle")
-
-      handle.append("path")
-          .attr("transform", "translate(0," + height *1/5 + ")")
-          .attr("d", "M 0 -20 V 20")
-
-      handle.append('text')
-        .text(startingValue)
-        .attr("transform", "translate(" + (-18) + " ," + (height*(1/5) - 25) + ")");
-
-      slider.call(brush.event)
-
-      function brushed() {
-        var value = brush.extent()[0];
-
-        if (d3.event.sourceEvent) { // not a programmatic event
-          handle.select('text');
-          value = x.invert(d3.mouse(this)[0]);
-          brush.extent([value, value]);
-        }
-
-        handle.attr("transform", "translate(" + x(value) + ",0)");
-        handle.select('text').text(Math.floor(value))
+  $(function() {
+    $( "#ageSlider" ).slider({
+      min: 20,
+      max: 90,
+      value: 55,
+      slide: function( event, ui ) {
+        $( "#age" ).val( ui.value );
+      },
+      change: function(event, ui) {
+        age = ui.value;
       }
-
-
-
-      
-      
-      var x2 = d3.scale.linear()
-          .domain([20, 90])
-          .range([0, width])
-          .clamp(true);
-
-      // defines brush
-      var brush2 = d3.svg.brush()
-          .x(x2)
-          .extent([startingValue, startingValue])
-      .on("brush", brushed2);
-
-      /*
-      var svg2 = d3.select("body").append("svg")
-          .attr("width", width+100 + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        // classic transform to position g
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-      */
-      
-      svg.append("g")
-          .attr("class", "x axis")
-          // put in middle of screen
-          .attr("transform", "translate(0," + height *(2/5) + ")")
-          // inroduce axis
-          .call(d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickFormat(function(d) { return d; })
-            .tickSize(0)
-            .tickPadding(12)
-            .tickValues([20, 90]))
-        .select(".domain")
-        .select(function() {console.log(this); return this.parentNode.appendChild(this.cloneNode(true)); })
-          .attr("class", "halo");
-
-      var slider2 = svg.append("g")
-          .attr("class", "slider")
-          .call(brush2);
-
-      slider2.selectAll(".extent,.resize")
-          .remove();
-
-      slider2.select(".background")
-          .attr("height", height);
-
-      var handle2 = slider2.append("g")
-          .attr("class", "handle")
-
-      handle2.append("path")
-          .attr("transform", "translate(0," + height *(2/5) + ")")
-          .attr("d", "M 0 -20 V 20")
-
-      handle2.append('text')
-        .text(startingValue)
-        .attr("transform", "translate(" + (-18) + " ," + (height*(2/5) - 25) + ")");
-
-      slider2.call(brush2.event)
-
-      function brushed2() {
-        var value2 = brush2.extent()[0];
-
-        if (d3.event.sourceEvent) { // not a programmatic event
-          handle2.select('text');
-          value2 = x2.invert(d3.mouse(this)[0]);
-          brush2.extent([value2, value2]);
+    });
+});
+    $(function() {
+      var bpslider = $( "#bpSlider" ).slider({
+        min: 20,
+        max: 90,
+        value: 55,
+        slide: function( event, ui ) {
+          $( "#bp" ).val( ui.value );
+        },
+        change: function(event, ui) {
+          bp = ui.value;
         }
-
-        handle2.attr("transform", "translate(" + x(value2) + ",0)");
-        handle2.select('text').text(Math.floor(value2))
+      });
+      $( "#disablebp" ).click(function() {
+      if ( bpslider.slider( "option", "disabled" ) ) {
+        bpslider.slider( "enable" );
+      } else {
+        bpslider.slider( "disable" );
+        bp = undefined;
+        $( "#bp" ).val( null );
       }
-      
-      var x3 = d3.scale.linear()
-          .domain([20, 90])
-          .range([0, width])
-          .clamp(true);
+    });
+    bpslider.slider("disable");
 
-      // defines brush
-      var brush3 = d3.svg.brush()
-          .x(x3)
-          .extent([startingValue, startingValue])
-          .on("brush", brushed3);
-      var svg3 = d3.select("body").append("svg")
-          .attr("width", width+100 + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        // classic transform to position g
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      svg3.append("g")
-          .attr("class", "x axis")
-          // put in middle of screen
-          .attr("transform", "translate(0," + height / 2 + ")")
-          // inroduce axis
-          .call(d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickFormat(function(d) { return d; })
-            .tickSize(0)
-            .tickPadding(12)
-            .tickValues([20, 90]))
-        .select(".domain")
-        .select(function() {console.log(this); return this.parentNode.appendChild(this.cloneNode(true)); })
-          .attr("class", "halo");
-
-      var slider3 = svg3.append("g")
-          .attr("class", "slider")
-          .call(brush3);
-
-      slider3.selectAll(".extent,.resize")
-          .remove();
-
-      slider3.select(".background")
-          .attr("height", height);
-
-      var handle3 = slider3.append("g")
-          .attr("class", "handle")
-
-      handle3.append("path")
-          .attr("transform", "translate(0," + height / 2 + ")")
-          .attr("d", "M 0 -20 V 20")
-
-      handle3.append('text')
-        .text(startingValue)
-        .attr("transform", "translate(" + (-18) + " ," + (height / 2 - 25) + ")");
-
-      slider3.call(brush3.event)
-
-      function brushed3() {
-        var value3 = brush3.extent()[0];
-
-        if (d3.event.sourceEvent) { // not a programmatic event
-          handle3.select('text');
-          value3 = x3.invert(d3.mouse(this)[0]);
-          brush3.extent([value3, value3]);
-        }
-
-        handle3.attr("transform", "translate(" + x(value3) + ",0)");
-        handle3.select('text').text(Math.floor(value3))
+  });
+  $(function() {
+    $( "#MHRSlider" ).slider({
+      min: 120,
+      max: 200,
+      value: 150,
+      slide: function( event, ui ) {
+        $( "#MHR" ).val(  ui.value );
+      },
+      change: function(event, ui) {
+        thalach = ui.value;
       }
+    });
 
-      var x4 = d3.scale.linear()
-          .domain([20, 90])
-          .range([0, width])
-          .clamp(true);
+  });
 
-      // defines brush
-      var brush4 = d3.svg.brush()
-          .x(x4)
-          .extent([startingValue, startingValue])
-          .on("brush", brushed4);
-      var svg4 = d3.select("body").append("svg")
-          .attr("width", width+100 + margin.left + margin.right)
-          .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        // classic transform to position g
-          .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-      svg4.append("g")
-          .attr("class", "x axis")
-          // put in middle of screen
-          .attr("transform", "translate(0," + height / 2 + ")")
-          // inroduce axis
-          .call(d3.svg.axis()
-            .scale(x)
-            .orient("bottom")
-            .tickFormat(function(d) { return d; })
-            .tickSize(0)
-            .tickPadding(12)
-            .tickValues([20, 90]))
-        .select(".domain")
-        .select(function() {console.log(this); return this.parentNode.appendChild(this.cloneNode(true)); })
-          .attr("class", "halo");
-
-      var slider4 = svg4.append("g")
-          .attr("class", "slider")
-          .call(brush4);
-
-      slider4.selectAll(".extent,.resize")
-          .remove();
-
-      slider4.select(".background")
-          .attr("height", height);
-
-      var handle4 = slider4.append("g")
-          .attr("class", "handle")
-
-      handle4.append("path")
-          .attr("transform", "translate(0," + height / 2 + ")")
-          .attr("d", "M 0 -20 V 20")
-
-      handle4.append('text')
-        .text(startingValue)
-        .attr("transform", "translate(" + (-18) + " ," + (height / 2 - 25) + ")");
-
-      slider4.call(brush4.event)
-
-      function brushed4() {
-        var value4 = brush4.extent()[0];
-
-        if (d3.event.sourceEvent) { // not a programmatic event
-          handle4.select('text');
-          value4 = x4.invert(d3.mouse(this)[0]);
-          brush4.extent([value4, value4]);
-        }
-
-        handle4.attr("transform", "translate(" + x(value4) + ",0)");
-        handle4.select('text').text(Math.floor(value4))
+  $(function() {
+    $( "#RHRSlider" ).slider({
+      min: 40,
+      max: 90,
+      value: 65,
+      slide: function( event, ui ) {
+        $( "#RHR" ).val(  ui.value );
+      },
+      change: function(event, ui) {
+        thalrest = ui.value;
       }
+    });
 
-     
-      </script>
-    </body>
+  });
+
+  $(function() {
+    cholslider = $( "#cholSlider" ).slider({
+      min: 0,
+      max: 500,
+      value: 250,
+      slide: function( event, ui ) {
+        $( "#chol" ).val(  ui.value );
+      },
+      change: function(event, ui) {
+      chol = ui.value;
+      }
+    });
+    $( "#disablechol" ).click(function() {
+    if ( cholslider.slider( "option", "disabled" ) ) {
+      cholslider.slider( "enable" );
+    } else {
+      cholslider.slider( "disable" );
+      chol = undefined;
+      $( "#chol" ).val( null );
+    }
+  });
+  cholslider.slider("disable");
+  });
+
+  $(function() {
+    $( "#hd" ).selectable({
+      stop: function() {
+        var result = $( "#hd-result" ).empty();
+        $( ".ui-selected", this ).each(function() {
+          var index = $( "#hd a" ).index( this );
+          if(index == 0) {
+            famhist = 1
+          } else {
+            famhist = 0
+          }
+        });
+      }
+    });
+  });
+
+
+  $(function() {
+    $( "#cp" ).selectable({
+      stop: function() {
+        var result = $( "#cp-result" ).empty();
+        $( ".ui-selected", this ).each(function() {
+          var index = $( "#cp a" ).index( this );
+          if(index == 0) {
+            exang = 1
+          } else {
+            exang = 0
+          }
+        });
+      }
+    });
+  });
+
+  $(function() {
+    $( "#sex" ).selectable({
+      stop: function() {
+        var result = $( "#sex-result" ).empty();
+        $( ".ui-selected", this ).each(function() {
+          var index = $( "#sex a" ).index( this );
+          if(index == 0) {
+            sex = 1
+          } else {
+            sex = 0
+          }
+        });
+      }
+    });
+  });
+
+  $(function() {
+    $( "#smoker" ).selectable({
+      stop: function() {
+        var result = $( "#smoker-result" ).empty();
+        $( ".ui-selected", this ).each(function() {
+          var index = $( "#smoker a" ).index( this );
+          if(index == 0) {
+            years = 1
+          } else {
+            years = 0
+          }
+        });
+      }
+    });
+  });
+
+  $(function() {
+    $( "#submit" )
+      .button()
+      .click(function( event ) {
+        event.preventDefault();
+        console.log([age,sex,thalach,exang,years,famhist,thalrest,chol,bp]);
+      });
+  });
+
+  console.log([age,sex,thalach,exang,years,famhist,thalrest,chol,bp])
+  </script>
+</head>
+<body>
+
+
+
+<p id="display_value">
+  <label for="age">Age:</label>
+  <input type="text" id="age" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+<p id="question"> Select your age</p>
+<div id="ageSlider"></div>
+
+<p id="display_value">
+  <label for="MHR">Maximum Heart Rate:</label>
+  <input type="text" id="MHR" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+<p id="question"> Select your maximum heart rate</p>
+<div id="MHRSlider"></div>
+
+<p id="display_value">
+  <label for="RHR">Resting Heart Rate:</label>
+  <input type="text" id="RHR" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+<p id="question"> Select your resting heart rate</p>
+<div id="RHRSlider"></div>
+
+<p id="question">Sex:</p>
+<ol id="sex">
+  <a class="ui-widget-content">Male</a>
+  <a class="ui-widget-content">Female</a>
+
+</ol>
+
+<p id="question"> Does your family have a history of heart disease?</p>
+<ol id="hd">
+  <a class="ui-widget-content">Yes</a>
+  <a class="ui-widget-content">No</a>
+</ol>
+
+
+<p id="question"> Do you have chest pain while exercising?</p>
+<ol id="cp">
+  <a class="ui-widget-content">Yes</a>
+  <a class="ui-widget-content">No</a>
+
+</ol>
+
+
+<p id="question"> Have you been a habitual smoker for at least two years?</p>
+<ol id="smoker">
+  <a class="ui-widget-content">Yes</a>
+  <a class="ui-widget-content">No</a>
+
+</ol>
+
+<p id="display_value">
+  <label for="chol">Cholesterol:</label>
+  <input type="text" id="chol" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+
+<p id="question"> Select your cholesterol </p>
+<div id="cholSlider"></div>
+<button id="disablechol">Toggle disable/enable</button>
+
+<p id="display_value">
+  <label for="bp">Blood Pressure:</label>
+  <input type="text" id="bp" readonly style="border:0; color:#f6931f; font-weight:bold;">
+</p>
+
+<p id="question"> Select your blood pressure </p>
+<div id="bpSlider"></div>
+<button id="disablebp">Toggle disable/enable</button>
+<li></li>
+<li></li>
+<button id="submit">Submit</button>
+
+</body>
 </html>
