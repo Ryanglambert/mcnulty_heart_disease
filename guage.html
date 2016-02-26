@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjs/2.7.0/math.min.js
+	'></script>	
     <meta charset="utf-8">
 	<meta name="viewport" content="width=320" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
@@ -31,7 +33,6 @@
 </head>
 <body>
 <div id="power-gauge"></div>
-	
 <script>
 var gauge = function(container, configuration) {
 	var that = {};
@@ -58,7 +59,7 @@ var gauge = function(container, configuration) {
 		labelFormat					: d3.format(',g'),
 		labelInset					: 10,
 		
-		arcColorFn					: d3.interpolateHsl(d3.rgb('#e8e2ca'), d3.rgb('#3e6c0a'))
+		arcColorFn					: d3.interpolateHsl(d3.rgb('#7CAB00'), d3.rgb('#AB0000'))
 	};
 	var range = undefined;
 	var r = undefined;
@@ -197,7 +198,7 @@ var gauge = function(container, configuration) {
 </script>
 
 <script>
-function onDocumentReady() {
+function onDocumentReady(inputs) {
 	var powerGauge = gauge('#power-gauge', {
 		size: 600,
 		clipWidth: 600,
@@ -209,15 +210,28 @@ function onDocumentReady() {
 	powerGauge.render();
 	
 	function updateReadings() {
+		var predbasemodel = function(input){
+		    // Input format: [1,age,sex,thalach,exang,years(smoker at least 2 years),famhist,thalrest]
+		    var coeff = [ 0.10500203,
+						0.03503578, 
+						1.44883298, 
+						-0.0301142, 
+						1.37564255, 
+						0.1144102, 
+						0.58716087, 
+						0.00487661];
+		    var xt = math.multiply(coeff,input)
+		    return 1/(1+Math.pow(Math.E,-xt))
+		}
 		// just pump in random data here...
-		powerGauge.update(Math.random() * 10);
+		powerGauge.update(predbasemodel([1, 45, 1, 185, 0, 1, 1, 66]) * 100);
 	}
 	
 	// every few seconds update reading values
 	updateReadings();
 	setInterval(function() {
 		updateReadings();
-	}, 5 * 1000);
+	}, 3 * 1000);
 }
 
 if ( !window.isLoaded ) {
