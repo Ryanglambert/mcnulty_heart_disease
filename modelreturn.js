@@ -7,6 +7,22 @@
 
 // Input values as a javascript array with 1 as the first value
 
+var predvalue(input){
+	if (window.input[8] and !window.input[9]) {
+		input.pop()
+		return predbasemodel(input)
+	} else if (true) {
+		return predwcholesterol(input)
+	} else if (true) {
+		return predwbp(input)
+	} else {
+		return predwbpch(input)
+	}
+
+}
+
+
+
 var predbasemodel = function(input){
 	// Input format: [1,age,sex,thalach,exang,years(smoker at least 2 years),famhist,thalrest]
 	var coeff = [ 0.10500203,0.03503578, 1.44883298, -0.0301142, 1.37564255, 0.1144102, 0.58716087, 0.00487661];
