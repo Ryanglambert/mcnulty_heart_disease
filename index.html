@@ -123,6 +123,7 @@ var gauge = function(container, configuration) {
 			.domain([config.minValue, config.maxValue]);
 
 		ticks = scale.ticks(config.majorTicks);
+    console.log(typeof(ticks))
 		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
 
 		arc = d3.svg.arc()
@@ -218,7 +219,7 @@ var gauge = function(container, configuration) {
 </script>
 
 <script>
-var boo=0,age,sex,thalach,exang,years,famhist,thalrest,chol,bp;
+var boo=1,age=0,sex=0,thalach=0,exang=0,years=0,famhist=0,thalrest=0,chol,bp;
 
 function onDocumentReady() {
 	var powerGauge = gauge('#power-gauge', {
@@ -236,7 +237,6 @@ function onDocumentReady() {
 
       input.pop();
       input.pop();
-      console.log(input.length)
       return predbasemodel(input);
 
     } else if (typeof input[8] != 'undefined' && typeof(input[9]) == 'undefined') {
@@ -477,7 +477,6 @@ function onDocumentReady() {
       });
   });
 
-  console.log([age,sex,thalach,exang,years,famhist,thalrest,chol,bp])
 
 
 
