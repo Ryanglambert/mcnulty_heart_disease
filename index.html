@@ -2,16 +2,39 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>jQuery UI Slider - Range slider</title>
+  <meta name="viewport" content="width=320" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Home Page</title>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.10.2.js"></script>
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjs/2.7.0/math.min.js'></script>
+  <script type="text/javascript" src="http://d3js.org/d3.v2.min.js"></script>
   <link rel="stylesheet" href="/resources/demos/style.css">
   <style>
-  div {
-    height: auto;
-    width: 200px;
-  }
+  #ageSlider { height: 5px; width: 200px;}
+  #bpSlider { height: 5px; width: 200px;}
+  #MHRSlider { height: 5px; width: 200px;}
+  #RHRSlider { height: 5px; width: 200px;}
+  #cholSlider { height: 5px; width: 200px;}
+  body {
+		font-family:  Helvetica, Arial, sans-serif;
+		margin: 32px;
+	}
+  #power-gauge g.arc {
+		fill: steelblue;
+	}
+	#power-gauge g.pointer {
+		fill: #e85116;
+		stroke: #b64011;
+	}
+
+	#power-gauge g.label text {
+		text-anchor: middle;
+		font-size: 14px;
+		font-weight: bold;
+		fill: #666;
+	}
 
   #hd .ui-selecting { background: #FECA40; }
   #hd .ui-selected { background: #F39814; color: white; }
@@ -33,8 +56,259 @@
   #smoker {  margin: 0; padding: 0; width: 20%; }
   #smoker a { margin: 3px; padding: 0.4em; font-size: 1.4em; height: 18px; }
 </style>
-  <script>
-  var age,sex,thalach,exang,years,famhist,thalrest,chol,bp;
+
+<script>
+var gauge = function(container, configuration) {
+	var that = {};
+	var config = {
+		size						: 600,
+		clipWidth					: 400,
+		clipHeight					: 220,
+		ringInset					: 20,
+		ringWidth					: 20,
+
+		pointerWidth				: 10,
+		pointerTailLength			: 5,
+		pointerHeadLengthPercent	: 0.9,
+
+		minValue					: 0,
+		maxValue					: 100,
+
+		minAngle					: -90,
+		maxAngle					: 90,
+
+		transitionMs				: 750,
+
+		majorTicks					: 5,
+		labelFormat					: d3.format(',g'),
+		labelInset					: 10,
+
+		arcColorFn					: d3.interpolateHsl(d3.rgb('#67CC00'), d3.rgb('#FF0000'))
+	};
+	var range = undefined;
+	var r = undefined;
+	var pointerHeadLength = undefined;
+	var value = 0;
+
+	var svg = undefined;
+	var arc = undefined;
+	var scale = undefined;
+	var ticks = undefined;
+	var tickData = undefined;
+	var pointer = undefined;
+	var donut = d3.layout.pie();
+
+	function deg2rad(deg) {
+		return deg * Math.PI / 180;
+	}
+
+	function newAngle(d) {
+		var ratio = scale(d);
+		var newAngle = config.minAngle + (ratio * range);
+		return newAngle;
+	}
+
+	function configure(configuration) {
+		var prop = undefined;
+		for ( prop in configuration ) {
+			config[prop] = configuration[prop];
+		}
+
+		range = config.maxAngle - config.minAngle;
+		r = config.size / 2;
+		pointerHeadLength = Math.round(r * config.pointerHeadLengthPercent);
+		// a linear scale that maps domain values to a percent from 0..1
+		scale = d3.scale.linear()
+			.range([0,1])
+			.domain([config.minValue, config.maxValue]);
+
+		ticks = scale.ticks(config.majorTicks);
+		tickData = d3.range(config.majorTicks).map(function() {return 1/config.majorTicks;});
+
+		arc = d3.svg.arc()
+			.innerRadius(r - config.ringWidth - config.ringInset)
+			.outerRadius(r - config.ringInset)
+			.startAngle(function(d, i) {
+				var ratio = d * i;
+				return deg2rad(config.minAngle + (ratio * range));
+			})
+			.endAngle(function(d, i) {
+				var ratio = d * (i+1);
+				return deg2rad(config.minAngle + (ratio * range));
+			});
+	}
+	that.configure = configure;
+
+	function centerTranslation() {
+		return 'translate('+r +','+ r +')';
+	}
+
+	function isRendered() {
+		return (svg !== undefined);
+	}
+	that.isRendered = isRendered;
+
+	function render(newValue) {
+		svg = d3.select(container)
+			.append('svg:svg')
+				.attr('class', 'gauge')
+				.attr('width', config.clipWidth)
+				.attr('height', config.clipHeight);
+
+		var centerTx = centerTranslation();
+
+		var arcs = svg.append('g')
+				.attr('class', 'arc')
+				.attr('transform', centerTx);
+
+		arcs.selectAll('path')
+				.data(tickData)
+			.enter().append('path')
+				.attr('fill', function(d, i) {
+					return config.arcColorFn(d * i);
+				})
+				.attr('d', arc);
+
+		var lg = svg.append('g')
+				.attr('class', 'label')
+				.attr('transform', centerTx);
+		lg.selectAll('text')
+				.data(ticks)
+			.enter().append('text')
+				.attr('transform', function(d) {
+					var ratio = scale(d);
+					var newAngle = config.minAngle + (ratio * range);
+					return 'rotate(' +newAngle +') translate(0,' +(config.labelInset - r) +')';
+				})
+				.text(config.labelFormat);
+		var lineData = [ [config.pointerWidth / 2, 0],
+						[0, -pointerHeadLength],
+						[-(config.pointerWidth / 2), 0],
+						[0, config.pointerTailLength],
+						[config.pointerWidth / 2, 0] ];
+		var pointerLine = d3.svg.line().interpolate('monotone');
+		var pg = svg.append('g').data([lineData])
+				.attr('class', 'pointer')
+				.attr('transform', centerTx);
+
+		pointer = pg.append('path')
+			.attr('d', pointerLine/*function(d) { return pointerLine(d) +'Z';}*/ )
+			.attr('transform', 'rotate(' +config.minAngle +')');
+
+		update(newValue === undefined ? 0 : newValue);
+	}
+	that.render = render;
+
+	function update(newValue, newConfiguration) {
+		if ( newConfiguration  !== undefined) {
+			configure(newConfiguration);
+		}
+		var ratio = scale(newValue);
+		var newAngle = config.minAngle + (ratio * range);
+		pointer.transition()
+			.duration(config.transitionMs)
+			.ease('elastic')
+			.attr('transform', 'rotate(' +newAngle +')');
+	}
+	that.update = update;
+	configure(configuration);
+
+	return that;
+};
+</script>
+
+<script>
+var boo=0,age,sex,thalach,exang,years,famhist,thalrest,chol,bp;
+
+function onDocumentReady() {
+	var powerGauge = gauge('#power-gauge', {
+		size: 600,
+		clipWidth: 600,
+		clipHeight: 600,
+		ringWidth: 120,
+		maxValue: 100,
+		transitionMs: 4000,
+	});
+	powerGauge.render();
+  var predvalue = function(input){
+
+    if (typeof input[8] == 'undefined' && typeof(input[9]) == 'undefined') {
+
+      input.pop();
+      input.pop();
+      console.log(input.length)
+      return predbasemodel(input);
+
+    } else if (typeof input[8] != 'undefined' && typeof(input[9]) == 'undefined') {
+
+      input.pop()
+      return predwcholesterol(input);
+
+    } else if (typeof input[8] == 'undefined' && typeof(input[9]) != 'undefined') {
+
+      input.splice(8,1)
+      return predwbp(input)
+
+    } else {
+
+      return predwbpch(input)
+
+    }
+
+  }
+
+  var predbasemodel = function(input){
+      // Input format: [1,age,sex,thalach,exang,years(smoker at least 2 years),famhist,thalrest]
+      var coeff = [ 0.10500203,
+          0.03503578,
+          1.44883298,
+          -0.0301142,
+          1.37564255,
+          0.1144102,
+          0.58716087,
+          0.00487661];
+      var xt = math.multiply(coeff,input)
+      return 1/(1+Math.pow(Math.E,-xt))
+  }
+
+  var predwcholesterol = function(input){
+    // Input format: [1,age,sex,thalach,exang,years(smoker at least 2 years),famhist,thalrest,cholesterol]
+    var coeff = [-0.1193843, 0.02250782, 1.61838502, -0.03522242, 1.27050383, 0.12327811, 0.52015734, 0.00207758,  0.00736791];
+    var xt = math.multiply(coeff,input);
+    return 1/(1+Math.pow(Math.E,-xt));
+  }
+
+  var predwbp = function(input){
+    // Input format: [1,age,sex,thalach,exang,years(smoker at least 2 years),famhist,thalrest,trestbp]
+    var coeff = [-0.07929409, 0.02949325,1.41989162,-0.03242003,1.33069392,0.10921246,0.55968885, 0.00338425, 0.01180823];
+    var xt = math.multiply(coeff,input);
+    return 1/(1+Math.pow(Math.E,-xt));
+  }
+
+  var predwbpch = function(input){
+    // Input format: [1,age,sex,thalach,exang,years(smoker at least 2 years),famhist,thalrest,cholesterol,trestbp]s
+    var coeff = [-0.1193843, .01929929, 1.59688396, -.03653256, 1.25157194, .115829804, .507826350, .0011524556, .007183951, .00736351577];
+    var xt = math.multiply(coeff,input)
+    return 1/(1+Math.pow(Math.E,-xt))
+  }
+	function updateReadings() {
+    input = [boo,age,sex,thalach,exang,years,famhist,thalrest,chol,bp]
+
+		// just pump in random data here...
+    if (input[0]==0) {
+		    powerGauge.update(predvalue([1, 45, 1, 185, 0, 1, 1, 66,undefined,undefined]) * 100);
+    } else {
+      powerGauge.update(predvalue(input) * 100);
+    }
+	}
+
+	// every few seconds update reading values
+	updateReadings();
+	setInterval(function() {
+		updateReadings();
+	}, 3 * 1000);
+
+
 
   $(function() {
     $( "#ageSlider" ).slider({
@@ -48,7 +322,7 @@
         age = ui.value;
       }
     });
-});
+  });
     $(function() {
       var bpslider = $( "#bpSlider" ).slider({
         min: 20,
@@ -197,11 +471,26 @@
       .button()
       .click(function( event ) {
         event.preventDefault();
-        console.log([age,sex,thalach,exang,years,famhist,thalrest,chol,bp]);
+        console.log([age,sex,thalach,exang,years,famhist,thalrest,chol,bp])
+        boo = 1
+        powerGauge.update(predvalue([boo,age,sex,thalach,exang,years,famhist,thalrest,chol,bp]) * 100);
       });
   });
 
   console.log([age,sex,thalach,exang,years,famhist,thalrest,chol,bp])
+
+
+
+}
+if ( !window.isLoaded ) {
+	window.addEventListener("load", function() {
+		onDocumentReady();
+	}, false);
+} else {
+	onDocumentReady();
+}
+
+
   </script>
 </head>
 <body>
@@ -278,6 +567,6 @@
 <li></li>
 <li></li>
 <button id="submit">Submit</button>
-
+<div id="power-gauge"></div>
 </body>
 </html>
