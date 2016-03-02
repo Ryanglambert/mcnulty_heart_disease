@@ -12,9 +12,13 @@ Completed as project 'Mcnulty' for the 2016 [Metis](http://www.thisismetis.com/)
 ### Project Authors
 
 [Mark Jackson](https://github.com/markgjackson)
+
 [Matt Kerrigan](https://github.com/mkerrig)
+
 [Ryan Lambert](https://github.com/Ryanglambert)
+
 [Ben Straate](https://github.com/bstraa)
+
 [Nathan Thompson](https://github.com/Nathan-Thompson)
 
 
